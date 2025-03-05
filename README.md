@@ -142,7 +142,8 @@ do a contagem de referências) e este fato deve estar oculto do cliente. Um exem
 
 ## Estrutura
 
-![alt text](image-1.png)
+![image](https://github.com/user-attachments/assets/3d096608-9804-4763-9684-77db5d6f5d2a)
+
 
 
 
