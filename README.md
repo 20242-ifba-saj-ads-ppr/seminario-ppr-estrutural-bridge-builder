@@ -394,6 +394,7 @@ Um padrão Abstract Factory pode criar e configurar uma Bridge específicar.
 
 ## Referências
 
+GAMMA, Erich; HELM, Richard; JOHNSON, Ralph; VLISSIDES, John. Padrões de projeto: soluções reutilizáveis de software orientado a objetos. 1. ed. Porto Alegre: Bookman, 2000.
 
 
 
