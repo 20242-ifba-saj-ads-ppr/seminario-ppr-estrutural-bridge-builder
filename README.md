@@ -9,7 +9,7 @@ independentemente.
 Handle/Body
 
 ## Motivação 
-sImagine que um restaurante precisa oferecer diferentes sabores de pizzas (Calabresa, Quatro Queijos, etc.), e que cada restaurante pode ter suas próprias variações na preparação desta pizza. No Brasil, essa pizza pode ser preparada de uma forma, na China outra e na Italia outra. Se o código fosse implementado de forma tradicional, sem o Bridge, teríamos uma hierarquia rígida onde cada tipo de pizza precisaria lidar diretamente com todas as variações de preparo.
+Imagine que um restaurante precisa oferecer diferentes sabores de pizzas (Calabresa, Quatro Queijos, etc.), e que cada restaurante pode ter suas próprias variações na preparação desta pizza. No Brasil, essa pizza pode ser preparada de uma forma, na China outra e na Italia outra. Se o código fosse implementado de forma tradicional, sem o Bridge, teríamos uma hierarquia rígida onde cada tipo de pizza precisaria lidar diretamente com todas as variações de preparo.
 
 ```plantuml
 @startuml
