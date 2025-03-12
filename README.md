@@ -8,6 +8,55 @@ independentemente.
 ## Também conhecido como
 Handle/Body
 
+## Motivação GOF 
+
+Quando uma abstração pode ter uma entre várias implementações possíveis, a maneira usual de acomodá-las é usando a herança. Uma classe abstrata define a interface para a abstração, e subclasses concretas a implementam de formas diferentes. Mas essa abordagem nem sempre é suficientemente flexível. A herança liga uma implementação à abstração permanentemente, o que torna difícil modificar, aumentar e reutilizar abstrações e implementações independentemente.
+
+Considere a implementação de uma Janela portável em um toolkit para construir interfaces de usuários. Por exemplo, essa abstração deveria nos habilitar a escrever aplicações que trabalham tanto com o sistema XWindow quanto com o Presentation- Manager (PM), da IBM. Usando a herança, poderíamos definir uma classe abstrata Window e subclasses XWindow e PMWindow que implementam a interface Janela para diferentes plataformas. Porém, essa abordagem tem dois problemas:
+
+1. É inconveniente estender a abstração Window para cobrir diferentes tipos de
+janela ou novas plataformas. Imagine uma subclasse IconWindow de Window
+que especializa a abstração Window para ícones. Para suportar IconWindows
+para ambas as plataformas, temos que implementar duas classes novas,
+XIconWindow e PMIconWindow. Pior ainda, teremos que definir duas
+classes para cada tipo de janela. Suportar uma terceira plataforma exige ainda
+uma outra subclasse de Window para cada tipo de janela.
+
+![image](https://github.com/user-attachments/assets/245825c8-9ca5-4721-b6c4-d35b260976f4)
+
+2. Ela torna o código do cliente dependente de plataforma. Sempre que um cliente
+cria uma janela, instancia uma classe concreta que tem uma implementação
+específica. Por exemplo, a criação de um objeto Xwindow amarra a abstração
+Window à implementação do XWindow, o que torna o código do cliente
+dependente da implementação do XWindow. Isso, por sua vez, torna mais
+difícil portar o código do cliente para outras plataformas.
+Os clientes deveriam ser capazes de criar uma janela sem se prenderem a uma
+
+implementação concreta. Somente a implementação da janela deveria de-
+pender da plataforma na qual a aplicação é executada. Portanto, o código do
+
+cliente deveria instanciar janelas sem mencionar plataformas específicas.
+O padrão Bridge trata desses problemas colocando a abstração Window e sua
+implementação em hierarquias de classes separadas. Existe somente uma hierarquia
+de classes para interfaces de janelas (Window, IconWindow, TransientWindow) e
+
+uma hierarquia separada para implementações de janelas específicas das platafor-
+mas, tendo como sua raiz WindowImp. Por exemplo, a subclasse XWindowImp
+
+fornece uma implementação baseada no sistema XWindow.
+
+![image](https://github.com/user-attachments/assets/088e9212-ef45-4e70-8c05-5f15bb4e8534)
+
+Todas as operações das subclasses de Window são implementadas em termos das
+operações abstratas da interface WindowImp. Isso desacopla as abstrações de janelas
+
+das várias implementações específicas para cada plataforma. Referimo-nos ao relaci-
+onamento entre Window e WindowImp como uma ponte (bridge) porque ela forma uma
+
+ponte entre abstração e sua implementação, permitindo que variem de forma indepen-
+dente.
+
+
 ## Motivação 
 Imagine que um restaurante precisa oferecer diferentes sabores de pizzas (Calabresa, Quatro Queijos, etc.), e que cada restaurante pode ter suas próprias variações na preparação desta pizza. No Brasil, essa pizza pode ser preparada de uma forma, na China outra e na Italia outra. Se o código fosse implementado de forma tradicional, sem o Bridge, teríamos uma hierarquia rígida onde cada tipo de pizza precisaria lidar diretamente com todas as variações de preparo.
 
