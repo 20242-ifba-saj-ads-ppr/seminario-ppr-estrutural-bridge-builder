@@ -63,33 +63,31 @@ Imagine que um restaurante precisa oferecer diferentes sabores de pizzas (Calabr
 ```plantuml
 @startuml
 interface Pizza {
-    + montarItaliana()
-    + montarBrasileira()
-    + montarChinesa()
-    + verificarQualidadeItaliana()
-    + verificarQualidadeBrasileira()
-    + verificarQualidadeChinesa()
+    + montar()
+    + verificarQualidade()
     + entregar()
 }
 
 class PizzaCalabresa {
-    + montarItaliana()
-    + montarBrasileira()
-    + montarChinesa()
-    + verificarQualidadeItaliana()
-    + verificarQualidadeBrasileira()
-    + verificarQualidadeChinesa()
+    + montar()
+    + verificarQualidade()
     + entregar()
 }
 
 class PizzaQuatroQueijos {
-    + montarItaliana()
-    + montarBrasileira()
-    + montarChinesa()
-    + verificarQualidadeItaliana()
-    + verificarQualidadeBrasileira()
-    + verificarQualidadeChinesa()
+    + montar()
+    + verificarQualidade()
     + entregar()
+}
+
+class PizzaCalabresaItaliana {
+    + montar()
+    + verificarQualidade()
+}
+
+class PizzaCalabresaBrasileira {
+    + montar()
+    + verificarQualidade()
 }
 
 class Main {
@@ -98,6 +96,8 @@ class Main {
 
 Pizza <|-- PizzaCalabresa
 Pizza <|-- PizzaQuatroQueijos
+PizzaCalabresa --|> PizzaCalabresaItaliana
+PizzaCalabresa --|> PizzaCalabresaBrasileira
 Main --> Pizza
 @enduml
 ```
