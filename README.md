@@ -9,112 +9,117 @@ independentemente.
 Handle/Body
 
 ## Motivação 
-Imagine que um restaurante precisa oferecer diferentes tipos de pizzas (Italiana, Napolitana, etc.), e que cada restaurante pode ter suas próprias variações na preparação da pizza. Se o código fosse implementado de forma tradicional, sem o Bridge, teríamos uma hierarquia rígida onde cada restaurante teria que implementar diretamente os detalhes da pizza.
-
-Isso levaria a um alto acoplamento entre as classes, tornando difícil adicionar novos tipos de pizzas ou restaurantes sem modificar muitas partes do código. Por exemplo, se fosse necessário criar um Restaurante Japonês com uma pizza exclusiva, precisaríamos duplicar código ou modificar várias classes existentes.
+sImagine que um restaurante precisa oferecer diferentes sabores de pizzas (Calabresa, Quatro Queijos, etc.), e que cada restaurante pode ter suas próprias variações na preparação desta pizza. No Brasil, essa pizza pode ser preparada de uma forma, na China outra e na Italia outra. Se o código fosse implementado de forma tradicional, sem o Bridge, teríamos uma hierarquia rígida onde cada tipo de pizza precisaria lidar diretamente com todas as variações de preparo.
 
 ```plantuml
 @startuml
-class PizzaItaliana {
-    + montar()
-    + verificarQualidade()
-}
-
-class PizzaNapolitana {
-    + montar()
-    + verificarQualidade()
-}
-
-class RestauranteBrasileiro {
-    + prepararPedido()
-    + adicionarMolho()
-    + adicionarRecheio()
-    + fazerMassa()
+interface Pizza {
+    + montarItaliana()
+    + montarBrasileira()
+    + montarChinesa()
+    + verificarQualidadeItaliana()
+    + verificarQualidadeBrasileira()
+    + verificarQualidadeChinesa()
     + entregar()
 }
 
-class RestauranteItaliano {
-    + prepararPedido()
-    + adicionarMolho()
-    + adicionarRecheio()
-    + fazerMassa()
+class PizzaCalabresa {
+    + montarItaliana()
+    + montarBrasileira()
+    + montarChinesa()
+    + verificarQualidadeItaliana()
+    + verificarQualidadeBrasileira()
+    + verificarQualidadeChinesa()
     + entregar()
 }
 
-RestauranteBrasileiro --> PizzaItaliana
-RestauranteBrasileiro --> PizzaNapolitana
-RestauranteItaliano --> PizzaItaliana
-RestauranteItaliano --> PizzaNapolitana
+class PizzaQuatroQueijos {
+    + montarItaliana()
+    + montarBrasileira()
+    + montarChinesa()
+    + verificarQualidadeItaliana()
+    + verificarQualidadeBrasileira()
+    + verificarQualidadeChinesa()
+    + entregar()
+}
+
+class Main {
+    + main(String[] args)
+}
+
+Pizza <|-- PizzaCalabresa
+Pizza <|-- PizzaQuatroQueijos
+Main --> Pizza
 @enduml
 ```
 
-#### Solução com Bridge:
+Isso levaria a um alto acoplamento entre as classes, tornando difícil adicionar novos tipos de pizzas ou estilos de preparo sem modificar várias partes do código. Por exemplo, se fosse necessário adicionar um novo tipo de pizza (ex: Pizza Marguerita) ou um novo estilo de preparo (ex: Pizza Francesa), precisaríamos modificar todas as classes de pizzas existentes, adicionando novos métodos como montarFrancesa() e verificarQualidadeFrancesa().
 
-- O padrão Bridge resolve esse problema ao separar a abstração (Restaurante) da implementação (Pizza), permitindo que os dois possam evoluir independentemente. Assim:
+Além disso, o código ficaria inflado com métodos duplicados, pois cada classe de pizza teria que implementar versões específicas de montar() e verificarQualidade() para cada estilo de preparo. Isso dificulta a manutenção e a escalabilidade, já que uma simples mudança na lógica de montagem afetaria diversas classes.
 
-- Podemos adicionar novos tipos de pizza sem precisar modificar os restaurantes.
+#### Com o Bridge:
 
-- Podemos adicionar novos tipos de restaurantes sem precisar modificar as pizzas.
-Evitamos código duplicado, pois a lógica de montagem das pizzas fica encapsulada em suas próprias classes.
+Com o padrão Bridge, a separação entre tipos de pizza e estilos de preparo é clara. As pizzas se preocupam apenas em entregar, enquanto os estilos de preparo lidam com a montagem e a verificação de qualidade. Assim, podemos adicionar novos sabores de pizza ou novos estilos de preparo sem impactar as classes já existentes, tornando o código mais flexível, modular e fácil de manter. 
+
+
+- Podemos adicionar novos tipos de pizza sem precisar modificar os modos de preparo no restaurantes.
+
 
 ```plantuml
 @startuml
+title Padrão Bridge - Pizzas
+
+' -- Interface do Implementor --
+interface PizzaImplementor {
+  + montar(): void
+  + verificarQualidade(): void
+}
+
+' -- Implementações concretas do Implementor --
+class PizzaItalianaImplementor implements PizzaImplementor {
+  + montar(): void
+  + verificarQualidade(): void
+}
+
+class PizzaBrasileiraImplementor implements PizzaImplementor {
+  + montar(): void
+  + verificarQualidade(): void
+}
+
+class PizzaChinesaImplementor implements PizzaImplementor {
+  + montar(): void
+  + verificarQualidade(): void
+}
+
+' -- Classe Abstrata Pizza --
 abstract class Pizza {
-    - String molho
-    - String recheio
-    - String massa
-    + setMolho(String)
-    + setRecheio(String)
-    + setMassa(String)
-    + montar()
-    + verificarQualidade()
+  - implementor: PizzaImplementor
+  --
+  + Pizza(implementor: PizzaImplementor)
+  + montar(): void
+  + verificarQualidade(): void
+  + entregar(): void
 }
 
-class PizzaItaliana {
-    + montar()
-    + verificarQualidade()
+' -- Sabores concretos de Pizza (Refined Abstractions) --
+class PizzaCalabresa extends Pizza {
+  + entregar(): void
 }
 
-class PizzaNapolitana {
-    + montar()
-    + verificarQualidade()
+class PizzaQuatroQueijos extends Pizza {
+  + entregar(): void
 }
 
+' -- Ligações do diagrama --
+PizzaImplementor <|.. PizzaItalianaImplementor
+PizzaImplementor <|.. PizzaBrasileiraImplementor
+PizzaImplementor <|.. PizzaChinesaImplementor
 
-Pizza <|-- PizzaItaliana
-Pizza <|-- PizzaNapolitana
+Pizza <|-- PizzaCalabresa
+Pizza <|-- PizzaQuatroQueijos
 
-abstract class Restaurante {
-    - Pizza pizza
-    + adicionarMolho()
-    + adicionarRecheio()
-    + fazerMassa()
-    + entregar()
-    + prepararPedido()
-}
-
-class RestauranteBrasileiro {
-    + adicionarMolho()
-    + adicionarRecheio()
-    + fazerMassa()
-    + entregar()
-}
-
-
-class RestauranteItaliano {
-    + adicionarMolho()
-    + adicionarRecheio()
-    + fazerMassa()
-    + entregar()
-}
-
-Restaurante <|-- RestauranteBrasileiro
-Restaurante <|-- RestauranteItaliano
-Restaurante o-- Pizza
-
-class Main{
-    + main()
-}
+' A Abstração "Pizza" mantém uma composição com "PizzaImplementor"
+Pizza o-- PizzaImplementor
 @enduml
 ```
 
@@ -149,17 +154,17 @@ do a contagem de referências) e este fato deve estar oculto do cliente. Um exem
 
 ## Participantes:
 
-- **Abstraction (Restaurante)**  
+- **Abstraction (Pizza)**  
   - define a interface da abstração;
   -  mantém uma referência para um objeto do tipo Implementor.
   
-- **RefinedAbstraction (RestauranteBrasileiro,RestauranteItaliano).**
+- **RefinedAbstraction (PizzaCalabresa, PizzaQuatroQueijos).**
   -  estende a interface definida por Abstraction.
 
-- **Implementor (Pizza)**
+- **Implementor (PizzaImplementor)**
   - define a interface para as classes de implementação. Essa interface não precisa corresponder exatamente à interface de Abstraction; de fato, as duas interfaces podem ser bem diferentes. A interface de Implementor fornece somente operações primitivas e Abstraction define operações de nível mais alto baseadas nessas primitivas.
 
-- **ConcreteImplementor (PizzaNapolitana, PizzaItaliana)**
+- **ConcreteImplementor (PizzaItalianaImplementor, PizzaBrasileiraImplementor, PizzaChinesaImplementor)**
   - implementa a interface de Implementor e define sua implementação concreta.
  
 
@@ -197,171 +202,101 @@ acompanham (se houver).
 ### Exemplo:
 
 
-#### Classe Restaurante - Abstraction
+#### Classe Pizza - Abstraction
 ```java
-package bridge;
-
-public abstract class Restaurante {
-
-    protected Pizza pizza;
-
-    protected Restaurante(Pizza pizza) {
-        this.pizza = pizza;
-    }
-
-    abstract void adicionarMolho();
-    abstract void adicionarRecheio();
-    abstract void fazerMassa();
-    abstract void entregar();
-    
-
-    public void prepararPedido() {
-        adicionarMolho();
-        adicionarRecheio();
-        fazerMassa();
-        pizza.montar();
-        pizza.verificarQualidade();
-        System.out.println("Pizza pronta para ser entregue");    
-    }
-}
-```
-#### Classe RestauranteBrasileiro - RefinedAbstraction:
-```java
-package bridge;
-
-public class RestauranteBrasileiro extends Restaurante {
-    protected RestauranteBrasileiro(Pizza pizza) {
-            super(pizza);
-        }
-    
-    @Override
-    void adicionarMolho() {
-        pizza.setMolho("Molho de tomate");
-    }
-
-    @Override
-    void adicionarRecheio() {
-       pizza.setRecheio("Frango, Queijo e Catupiry");
-    }
-
-    @Override
-    void fazerMassa() {
-        pizza.setMassa("Massa Grossa");
-    }
-
-    
-    @Override
-    void entregar() {
-       System.out.println("Entregando pizza");
-    }
-
-}
-```
-
-#### Classe RestauranteItaliano - RefinedAbstraction
-```java
-package bridge;
-
-public class RestauranteItaliano extends Restaurante {
-
-    protected RestauranteItaliano(Pizza pizza) {
-            super(pizza);
-        }
-    
-        @Override
-    void adicionarMolho() {
-        pizza.setMolho("Molho de tomate");
-    }
-
-    @Override
-    void adicionarRecheio() {
-       pizza.setRecheio("Frango");
-    }
-
-    @Override
-    void fazerMassa() {
-        pizza.setMassa("Massa fina");
-    }
-
-
-    @Override
-    void entregar() {
-       System.out.println("Entregando pizza italiana");
-    }
-}
-
-```
-#### Classe Pizza - Implementor
-
-```java
-package bridge;
-
 public abstract class Pizza {
-    protected String molho;
-    protected String recheio;
-    protected String massa;
+    protected PizzaImplementor implementor;
 
-    public void setMolho(String molho) {
-        this.molho = molho;
-    }
-
-    public void setRecheio(String recheio) {
-        this.recheio = recheio;
-    }
-
-    public void setMassa(String massa) {
-        this.massa = massa;
+    public Pizza(PizzaImplementor implementor) {
+        this.implementor = implementor;
     }
 
     public void montar() {
-        System.out.println("Montando pizza com molho: " + molho + ", recheio: " + recheio + " e massa: " + massa);
+        implementor.montar();
     }
 
     public void verificarQualidade() {
-        System.out.println("Verificando qualidade da pizza");
+        implementor.verificarQualidade();
     }
 
+    public abstract void entregar();
+}
+
+```
+#### Classe PizzaCalabresa, PizzaQuatroQueijos - RefinedAbstraction:
+```java
+public class PizzaCalabresa extends Pizza {
+    public PizzaCalabresa(PizzaImplementor implementor) {
+        super(implementor);
+    }
+
+    @Override
     public void entregar() {
-        System.out.println("Entregando pizza");
+        System.out.println("Entregando pizza de calabresa.");
     }
 }
-```
-#### Classe PizzaItaliana - ConcretImplementorA
-```java
-package bridge;
 
-public class PizzaItaliana extends Pizza {
+public class PizzaQuatroQueijos extends Pizza {
+    public PizzaQuatroQueijos(PizzaImplementor implementor) {
+        super(implementor);
+    }
+
+    @Override
+    public void entregar() {
+        System.out.println("Entregando pizza quatro queijos.");
+    }
+}
+
+```
+
+#### Classe PizzaImplementor - Implementor
+
+```java
+public interface PizzaImplementor {
+    void montar();
+    void verificarQualidade();
+}
+```
+#### Classe PizzaItalianaImplementor, PizzaBrasileiraImplementor, PizzaChinesaImplementor - ConcretImplementor
+```java
+public class PizzaItalianaImplementor implements PizzaImplementor {
     @Override
     public void montar() {
-        System.out.println("Montando pizza italiana com molho: " + molho + ", recheio: " + recheio + " e massa: " + massa);
+        System.out.println("Montando pizza italiana.");
     }
 
     @Override
     public void verificarQualidade() {
-        System.out.println("Verificando qualidade da pizza italiana");
+        System.out.println("Verificando qualidade da pizza italiana.");
     }
-    
 }
-```
 
-#### Classe PizzaNapolitana - ConcretImplementorB
-
-```java
-package bridge;
-
-public class PizzaNapolitana extends Pizza {
-
+public class PizzaBrasileiraImplementor implements PizzaImplementor {
     @Override
     public void montar() {
-        System.out.println("Montando pizza napolitana com molho: " + molho + ", recheio: " + recheio + " e massa: " + massa);
+        System.out.println("Montando pizza brasileira.");
     }
 
     @Override
     public void verificarQualidade() {
-        System.out.println("Verificando qualidade da pizza napolitana");
-    }   
+        System.out.println("Verificando qualidade da pizza brasileira.");
+    }
 }
+
+public class PizzaChinesaImplementor implements PizzaImplementor {
+    @Override
+    public void montar() {
+        System.out.println("Montando pizza chinesa.");
+    }
+
+    @Override
+    public void verificarQualidade() {
+        System.out.println("Verificando qualidade da pizza chinesa.");
+    }
+}
+
 ```
+
 
 ## Conclusão
 O padrão Bridge é uma solução eficiente para reduzir o acoplamento entre a abstração e sua implementação, permitindo maior flexibilidade e facilidade de manutenção. No nosso exemplo, ele resolve o problema de uma hierarquia rígida onde cada restaurante estaria diretamente vinculado a tipos específicos de pizza, dificultando a adição de novos restaurantes ou novas pizzas sem modificar muitas classes.
@@ -395,7 +330,6 @@ Um padrão Abstract Factory pode criar e configurar uma Bridge específicar.
 ## Referências
 
 GAMMA, Erich; HELM, Richard; JOHNSON, Ralph; VLISSIDES, John. Padrões de projeto: soluções reutilizáveis de software orientado a objetos. 1. ed. Porto Alegre: Bookman, 2000.
-
 
 
 
